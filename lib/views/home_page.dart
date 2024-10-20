@@ -1,59 +1,112 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/medicine_provider.dart';
-import '../models/medicine.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final medicineProvider = Provider.of<MedicineProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pharmacy App'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.sync),
-            onPressed: () {
-              // Sync data with Firebase
-            },
-          )
+        title: Text('MedixPOS'),
+      ),
+      drawer: _buildDrawer(context), // Drawer for mobile
+      body: Row(
+        children: [
+          if (!isMobile(context)) _buildSideNavigation(), // SideNav for desktop
+          Expanded(
+            child: _buildPageContent(),
+          ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: medicineProvider.medicines.length,
-        itemBuilder: (context, index) {
-          final medicine = medicineProvider.medicines[index];
-          return ListTile(
-            title: Text(medicine.name),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Brand: ${medicine.brand}'),
-                Text('MRP: ₹${medicine.mrp}'),
-                Text('Sale Price: ₹${medicine.salePrice}'),
-                Text('Stock: ${medicine.stock} ${medicine.unitType}(s)'),
-              ],
+    );
+  }
+
+  // Method to determine if the device is mobile
+  bool isMobile(BuildContext context) {
+    return MediaQuery.of(context).size.width < 600;
+  }
+
+  // Drawer for mobile navigation
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
             ),
-          );
-        },
+            child: Text(
+              'Navigation',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          _buildDrawerItem(Icons.home, 'Home', '/home'),
+          _buildDrawerItem(Icons.medical_services, 'Medicine', '/medicine'),
+          _buildDrawerItem(Icons.shopping_cart, 'Sale', '/sale'),
+          _buildDrawerItem(Icons.shopping_bag, 'Purchase', '/purchase'),
+          _buildDrawerItem(Icons.report, 'Report', '/report'),
+          _buildDrawerItem(Icons.sync, 'Sync', '/sync'),
+          _buildDrawerItem(Icons.settings, 'Settings', '/settings'),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add a new medicine
-          medicineProvider.addMedicine(
-            Medicine(
-              id: DateTime.now().toString(),
-              name: 'Paracetamol',
-              mrp: 50.0,
-              salePrice: 45.0,
-              stock: 100,
-              brand: 'XYZ Pharma',
-              unitType: 'strip',
+    );
+  }
+
+  // Drawer item helper method
+  Widget _buildDrawerItem(IconData icon, String title, String routeName) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      onTap: () {
+        Get.toNamed(routeName);
+      },
+    );
+  }
+
+
+  // Sidebar navigation for larger screens
+  Widget _buildSideNavigation() {
+    return Container(
+      width: 250,
+      child: Drawer(
+        elevation: 0,
+        child: ListView(
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Navigation',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
             ),
-          );
-        },
-        child: Icon(Icons.add),
+            _buildDrawerItem(Icons.home, 'Home', '/home'),
+            _buildDrawerItem(Icons.medical_services, 'Medicine', '/medicine'),
+            _buildDrawerItem(Icons.shopping_cart, 'Sale', '/sale'),
+            _buildDrawerItem(Icons.shopping_bag, 'Purchase', '/purchase'),
+            _buildDrawerItem(Icons.report, 'Report', '/report'),
+            _buildDrawerItem(Icons.sync, 'Sync', '/sync'),
+            _buildDrawerItem(Icons.settings, 'Settings', '/settings'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Page content builder
+  Widget _buildPageContent() {
+    return Center(
+      child: Text(
+        'Welcome to the Pharmacy Dashboard!',
+        style: TextStyle(fontSize: 24),
       ),
     );
   }

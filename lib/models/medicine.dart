@@ -1,28 +1,28 @@
 class Medicine {
   String id;
   String name;
-  double mrp;           // Maximum Retail Price
-  double salePrice;      // Sale price for the customer
-  int stock;            // Stock quantity
-  String brand;         // Brand of the medicine
-  String unitType;      // Unit type (e.g., box, strip, etc.)
+  double price;
+  double salePrice; // Added salePrice field
+  int stock;
+  String brand; // Added brand field
+  String unitType; // Added unitType field
 
   Medicine({
     required this.id,
     required this.name,
-    required this.mrp,
+    required this.price,
     required this.salePrice,
     required this.stock,
     required this.brand,
     required this.unitType,
   });
 
-  // Convert to Map for Firebase
+  // Convert to Map for Firebase and SQLite
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
-      'mrp': mrp,
+      'price': price,
       'salePrice': salePrice,
       'stock': stock,
       'brand': brand,
@@ -30,12 +30,12 @@ class Medicine {
     };
   }
 
-  // From Firestore (when fetching data from Firebase)
+  // From Firestore
   factory Medicine.fromMap(Map<String, dynamic> map) {
     return Medicine(
       id: map['id'],
       name: map['name'],
-      mrp: map['mrp'],
+      price: map['price'],
       salePrice: map['salePrice'],
       stock: map['stock'],
       brand: map['brand'],
