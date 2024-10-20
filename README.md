@@ -32,7 +32,7 @@ MedixPOS is a comprehensive Pharmacy Management App designed to streamline and o
 
 | Home Screen | Medicine List | Add Medicine | Reports |
 |-------------|----------------|--------------|---------|
-| ![Home](https://via.placeholder.com/150) | ![List](https://via.placeholder.com/150) | ![Add](https://via.placeholder.com/150) | ![Reports](https://via.placeholder.com/150) |
+| ![Home]([https://via.placeholder.com/150](https://github.com/Kanglei-Inovations/MedixPOS/blob/main/home_screen.jpg)) | ![List](https://via.placeholder.com/150) | ![Add](https://via.placeholder.com/150) | ![Reports](https://via.placeholder.com/150) |
 
 ---
 
