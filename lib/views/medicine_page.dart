@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:medixpos/views/dialog/add_medicine_dialog.dart';
+import 'package:medixpos/views/dialog/edit_medicine_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import '../models/medicine.dart';
@@ -71,14 +73,17 @@ class _MedicinePageState extends State<MedicinePage> {
                   IconButton(
                     icon: Icon(Icons.edit),
                     onPressed: () {
-                      Get.to(() => EditMedicinePage(
-                        id: medicine.id,
-                        name: medicine.name,
-                        price: medicine.price,
-                        salePrice: medicine.salePrice,
-                        stock: medicine.stock,
-                        brand: medicine.brand,
-                      ));
+                      showDialog(
+                        context: context,
+                        builder: (context) => EditMedicineDialog(
+                          id: medicine.id,
+                          name: medicine.name,
+                          price: medicine.price,
+                          salePrice: medicine.salePrice,
+                          stock: medicine.stock,
+                          brand: medicine.brand,
+                        ),
+                      );
                     },
                   ),
                   IconButton(
@@ -96,7 +101,10 @@ class _MedicinePageState extends State<MedicinePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(AddMedicine());
+          showDialog(
+            context: context,
+            builder: (context) => AddMedicineDialog(),  // Show the dialog
+          );
         },
         child: Icon(Icons.add),
       ),
