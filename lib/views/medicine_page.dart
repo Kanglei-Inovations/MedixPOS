@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:medixpos/views/dialog/add_medicine_dialog.dart';
 import 'package:medixpos/views/dialog/edit_medicine_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:get/get.dart';
-import '../models/medicine.dart';
 import '../providers/medicine_provider.dart';
-import 'add_medicine_page.dart';
-import 'edit_medicine_page.dart';
+
 
 class MedicinePage extends StatefulWidget {
   @override

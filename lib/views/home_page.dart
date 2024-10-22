@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('MedixPOS'),
-      ),
-      drawer: _buildDrawer(context), // Drawer for mobile
+       appBar: isMobile(context) ?AppBar(
+        title:Text('MedixPOS'),
+      ):AppBar(
+         title:Text('MedixPOS Billing and Management System'),
+       ),
+      // Show drawer only on mobile
+      drawer: isMobile(context) ? _buildDrawer(context) : null,
       body: Row(
         children: [
-          if (!isMobile(context)) _buildSideNavigation(), // SideNav for desktop
+          // Show sidebar only on desktop or larger screens
+          if (!isMobile(context)) _buildSideNavigation(),
           Expanded(
             child: _buildPageContent(),
           ),
@@ -21,7 +24,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Method to determine if the device is mobile
+  // Method to determine if the device is mobile (screen width < 600)
   bool isMobile(BuildContext context) {
     return MediaQuery.of(context).size.width < 600;
   }
@@ -37,7 +40,7 @@ class HomePage extends StatelessWidget {
               color: Colors.blue,
             ),
             child: Text(
-              'Navigation',
+              'Hi.. Admin',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -62,11 +65,10 @@ class HomePage extends StatelessWidget {
       leading: Icon(icon),
       title: Text(title),
       onTap: () {
-        Get.toNamed(routeName);
+        Get.toNamed(routeName); // Navigates to the specified route
       },
     );
   }
-
 
   // Sidebar navigation for larger screens
   Widget _buildSideNavigation() {
