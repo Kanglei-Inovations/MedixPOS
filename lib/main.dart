@@ -2,17 +2,25 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:medixpos/constants.dart';
+import 'package:medixpos/controllers/menu_app_controller.dart';
+
+import 'package:medixpos/views/components/medicine/medicine_screen.dart';
+
+import 'package:medixpos/views/medicine_page.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'providers/medicine_provider.dart';
-import 'views/home_page.dart';
-import 'views/medicine_page.dart';
+import 'views/dashboard_page.dart';
+
 import 'views/purchase_page.dart';
 import 'views/report_page.dart';
 import 'views/sale_page.dart';
 import 'views/setting_page.dart';
+import 'views/sync_page.dart';
 
 
 void main() async {
@@ -33,22 +41,29 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MedicineProvider()),
+        ChangeNotifierProvider(
+          create: (context) => MenuAppController(),
+        ),
         // Add other providers here
       ],
       child: GetMaterialApp(
         title: 'Pharmacy App',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: bgColor,
+          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+              .apply(bodyColor: Colors.white),
+          canvasColor: secondaryColor,
         ),
+
         debugShowCheckedModeBanner: false,
-        initialRoute: '/home', // Define the initial route
+        initialRoute: '/Dashboard', // Define the initial route
         getPages: [
-          GetPage(name: '/home', page: () => HomePage()),
-          GetPage(name: '/medicine', page: () => MedicinePage()), // Define routes
-          GetPage(name: '/sale', page: () => SalePage()),
-          GetPage(name: '/purchase', page: () => PurchasePage()),
-          GetPage(name: '/report', page: () => ReportPage()),
-          GetPage(name: '/settings', page: () => SettingPage()),
+          GetPage(name: '/Dashboard', page: () => MainScreen()), // Use the persistent layout for dashboard
+          GetPage(name: '/Sale', page: () => SalePage()),  // Same layout but different index
+          GetPage(name: '/Purchase', page: () => PurchasePage()),
+          GetPage(name: '/Medicine', page: () => MedicineScreen()),
+          GetPage(name: '/Report', page: () => ReportPage()),
+          GetPage(name: '/Settings', page: () => SettingPage()),
         ],
       ),
     );

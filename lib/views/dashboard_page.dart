@@ -1,14 +1,18 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:medixpos/controllers/menu_app_controller.dart';
 import 'package:medixpos/responsive.dart';
-import 'package:medixpos/views/components/medicine/medicine_screen.dart';
+import 'package:medixpos/views/components/dashboard/dashboard.dart';
 import 'package:medixpos/views/components/side_menu.dart';
+
+
+
 
 import 'package:provider/provider.dart';
 
-class MedicinePage extends StatelessWidget {
-  const MedicinePage({super.key});
 
+class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +32,7 @@ class MedicinePage extends StatelessWidget {
             Expanded(
               // It takes 5/6 part of the screen
               flex: 5,
-              child: MedicineScreen(),
+              child: DashboardScreen(),
             ),
           ],
         ),
