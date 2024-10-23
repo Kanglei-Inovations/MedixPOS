@@ -49,10 +49,7 @@ class SalePage extends StatelessWidget {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        "My Files",
-                                        style: Theme.of(context).textTheme.titleMedium,
-                                      ),
+
                                       ElevatedButton.icon(
                                         style: TextButton.styleFrom(
                                           padding: EdgeInsets.symmetric(
@@ -63,7 +60,7 @@ class SalePage extends StatelessWidget {
                                         ),
                                         onPressed: () {},
                                         icon: Icon(Icons.add),
-                                        label: Text("Add New"),
+                                        label: Text("New Sales"),
                                       ),
                                     ],
                                   ),
@@ -73,7 +70,7 @@ class SalePage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                           
+
                           ],
                         )
                       ],
