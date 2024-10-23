@@ -60,7 +60,7 @@ class PurchasePage extends StatelessWidget {
                                         ),
                                         onPressed: () {},
                                         icon: Icon(Icons.add),
-                                        label: Text("New Sales"),
+                                        label: Text("New Purchase"),
                                       ),
                                     ],
                                   ),
