@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medixpos/constants.dart';
 import 'package:medixpos/controllers/menu_app_controller.dart';
-import 'package:medixpos/views/components/medicine/medicine_screen.dart';
+import 'package:medixpos/views/medicine_page.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -53,14 +53,21 @@ class MyApp extends StatelessWidget {
           GetPage(
               name: '/Dashboard',
               page: () =>
-                  MainScreen()), // Use the persistent layout for dashboard
+                  MainScreen(),
+            transition:  Transition.fadeIn
+          ), // Use the persistent layout for dashboard
           GetPage(
               name: '/Sale',
-              page: () => SalePage()), // Same layout but different index
-          GetPage(name: '/Purchase', page: () => PurchasePage()),
-          GetPage(name: '/Medicine', page: () => MedicineScreen()),
-          GetPage(name: '/Report', page: () => ReportPage()),
-          GetPage(name: '/Settings', page: () => SettingPage()),
+              page: () => SalePage(),
+            transition:  Transition.fadeIn,
+          ), // Same layout but different index
+          GetPage(name: '/Purchase', page: () => PurchasePage(),
+            transition:  Transition.fadeIn,
+
+          ),
+          GetPage(name: '/Medicine', page: () => MedicinePage(), transition:  Transition.fadeIn,),
+          GetPage(name: '/Report', page: () => ReportPage(), transition:  Transition.fadeIn,),
+          GetPage(name: '/Settings', page: () => SettingPage(), transition:  Transition.fadeIn,),
         ],
       ),
     );

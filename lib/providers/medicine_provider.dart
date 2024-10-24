@@ -63,8 +63,8 @@ class MedicineProvider extends ChangeNotifier {
 
   // Edit Medicine
   // Edit Medicine
-  Future<void> updateMedicine(String id, String name, double price, double salePrice, int stock, String brand) async {
-    final db = await _getDatabase(); // Ensure you have a method to get the database connection
+  Future<void> updateMedicine(String id, String name, double price, double salePrice, int stock,String unit, String brand) async {
+    final db = await _getDatabase(); // Ens, String texture you have a method to get the database connection
 
     await db.update(
       'medicines',
@@ -74,6 +74,7 @@ class MedicineProvider extends ChangeNotifier {
         'salePrice': salePrice,
         'stock': stock,
         'brand': brand,
+        'unitType': unit,
       },
       where: 'id = ?',
       whereArgs: [id],

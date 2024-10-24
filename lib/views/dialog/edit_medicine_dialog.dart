@@ -10,14 +10,14 @@ class EditMedicineDialog extends StatelessWidget {
   final double salePrice;
   final int stock;
   final String brand;
-
+  final String unit;
   // Initialize controllers in the constructor
   final TextEditingController nameController;
   final TextEditingController stockController;
   final TextEditingController priceController;
   final TextEditingController salePriceController;
   final TextEditingController brandController;
-
+  final TextEditingController unitController;
   EditMedicineDialog({
     Key? key,
     required this.id,
@@ -25,12 +25,13 @@ class EditMedicineDialog extends StatelessWidget {
     required this.price,
     required this.salePrice,
     required this.stock,
-    required this.brand,
+    required this.brand, required this.unit,
   })  : nameController = TextEditingController(text: name),
         stockController = TextEditingController(text: stock.toString()),
         priceController = TextEditingController(text: price.toString()),
         salePriceController = TextEditingController(text: salePrice.toString()),
         brandController = TextEditingController(text: brand),
+        unitController = TextEditingController(text: unit),
         super(key: key);
 
   @override
@@ -77,6 +78,14 @@ class EditMedicineDialog extends StatelessWidget {
             ),
             SizedBox(height: 16.0),
             TextField(
+              controller: unitController,
+              decoration: InputDecoration(
+                labelText: 'Unit Type',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
               controller: brandController,
               decoration: InputDecoration(
                 labelText: 'Brand',
@@ -96,6 +105,7 @@ class EditMedicineDialog extends StatelessWidget {
               double.tryParse(priceController.text) ?? 0,
               double.tryParse(salePriceController.text) ?? 0,
               int.tryParse(stockController.text) ?? 0,
+              unitController.text,
               brandController.text,
             );
             // Close the dialog

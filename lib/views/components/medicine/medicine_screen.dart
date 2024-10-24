@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:medixpos/controllers/menu_app_controller.dart';
-import 'package:medixpos/views/components/side_menu.dart';
-import 'package:medixpos/views/dialog/add_medicine_dialog.dart';
-import 'package:medixpos/views/dialog/edit_medicine_dialog.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/medicine_provider.dart';
-
+import 'package:medixpos/views/dialog/add_medicine_dialog.dart';
+import 'package:medixpos/views/dialog/edit_medicine_dialog.dart';
+import 'package:medixpos/constants.dart';
 
 class MedicineScreen extends StatefulWidget {
   @override
@@ -19,96 +17,123 @@ class _MedicineScreenState extends State<MedicineScreen> {
   Widget build(BuildContext context) {
     final medicineProvider = Provider.of<MedicineProvider>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Medicine List'),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search Medicines',
-                border: OutlineInputBorder(),
+    List medicines = medicineProvider.medicines
+        .where((medicine) =>
+        medicine.name.toLowerCase().contains(searchQuery))
+        .toList();
+
+    return Container(
+
+      padding: EdgeInsets.all(defaultPadding),
+      decoration: BoxDecoration(
+        color: secondaryColor,
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(defaultPadding),
+        child: Container(
+          padding: EdgeInsets.all(defaultPadding),
+          decoration: BoxDecoration(
+            color: secondaryColor,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Medicine List",
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value.toLowerCase();
-                });
-              },
-            ),
+              SizedBox(
+                width: double.infinity,
+                child: DataTable(
+                  columnSpacing: defaultPadding,
+                  columns: [
+                    DataColumn(label: Text("Medicine Name")),
+                    DataColumn(label: Text("MRP/Price")),
+                    DataColumn(label: Text("Stock")),
+                    DataColumn(label: Text("Brand")),
+                    DataColumn(label: Text("Unit")),
+                    DataColumn(label: Text("Actions")),
+                  ],
+                  rows: List.generate(
+                    medicines.length,
+                        (index) => medicineDataRow(medicines[index], context, medicineProvider),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
-      key: context.read<MenuAppController>().scaffoldKey,
-      drawer: SideMenu(),
-      body: ListView.builder(
-        itemCount: medicineProvider.medicines
-            .where((medicine) =>
-            medicine.name.toLowerCase().contains(searchQuery))
-            .toList()
-            .length,
-        itemBuilder: (context, index) {
-          final medicine = medicineProvider.medicines
-              .where((medicine) =>
-              medicine.name.toLowerCase().contains(searchQuery))
-              .toList()[index];
 
-          return Card(
-            elevation: 5,
-            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            child: ListTile(
-              title: Text(medicine.name),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Stock: ${medicine.stock}'),
-                  Text('MRP: \$${medicine.price}'),
-                  Text('Sale Price: \$${medicine.salePrice}'),
-                  Text('Brand: ${medicine.brand}'),
-                ],
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => EditMedicineDialog(
-                          id: medicine.id,
-                          name: medicine.name,
-                          price: medicine.price,
-                          salePrice: medicine.salePrice,
-                          stock: medicine.stock,
-                          brand: medicine.brand,
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () {
-                      // Delete medicine functionality
-                      medicineProvider.deleteMedicine(medicine.id);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => AddMedicineDialog(),  // Show the dialog
-          );
-        },
-        child: Icon(Icons.add),
-      ),
     );
   }
+}
+
+DataRow medicineDataRow(medicine, BuildContext context, MedicineProvider medicineProvider) {
+  return DataRow(
+    cells: [
+      DataCell(Text(medicine.name)),
+      DataCell(
+        medicine.salePrice != null && medicine.salePrice > 0
+            ? Row(
+
+          children: [
+            Text(
+              '\$${medicine.price.toString()}',
+              style: TextStyle(
+                decoration: TextDecoration.lineThrough,
+                color: Colors.white38,
+                fontSize: 18,
+              ),
+            ),
+            SizedBox(width: 8),
+            Text(
+              '\$${medicine.salePrice.toString()}',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+
+          ],
+        )
+            : Text('\$${medicine.price.toString()}'),  // Only show price if no sale price
+      ),
+      DataCell(Text(medicine.stock.toString())),
+      DataCell(Text(medicine.unitType)),
+      DataCell(Text(medicine.brand)),
+      DataCell(
+        Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.edit, color: Colors.white,),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => EditMedicineDialog(
+                    id: medicine.id,
+                    name: medicine.name,
+                    price: medicine.price,
+                    salePrice: medicine.salePrice,
+                    stock: medicine.stock,
+                    unit: medicine.unitType,
+                    brand: medicine.brand,
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red,),
+              onPressed: () {
+                medicineProvider.deleteMedicine(medicine.id);
+              },
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }

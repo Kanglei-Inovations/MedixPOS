@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:medixpos/constants.dart';
 import 'package:medixpos/controllers/menu_app_controller.dart';
 import 'package:medixpos/responsive.dart';
+import 'package:medixpos/views/components/header.dart';
 import 'package:medixpos/views/components/medicine/medicine_screen.dart';
 import 'package:medixpos/views/components/side_menu.dart';
+import 'package:medixpos/views/dialog/add_medicine_dialog.dart';
 
 import 'package:provider/provider.dart';
 
@@ -27,12 +30,62 @@ class MedicinePage extends StatelessWidget {
               ),
             Expanded(
               // It takes 5/6 part of the screen
-              flex: 5,
-              child: MedicineScreen(),
-            ),
+                flex: 5,
+                child: SafeArea(
+                  child: SingleChildScrollView(
+                    primary: false,
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: Column(
+                      children: [
+                        Header(),
+                        SizedBox(height: defaultPadding),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 5,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+
+                                      ElevatedButton.icon(
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: defaultPadding * 1.5,
+                                            vertical:
+                                            defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AddMedicineDialog(),
+                                          );
+                                        },
+                                        icon: Icon(Icons.add),
+                                        label: Text("Add Medicine"),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: defaultPadding),
+                                  MedicineScreen(),
+
+                                ],
+                              ),
+                            ),
+
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                )),
           ],
         ),
       ),
     );
+
   }
 }
