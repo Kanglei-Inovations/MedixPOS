@@ -1,26 +1,18 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medixpos/constants.dart';
 import 'package:medixpos/controllers/menu_app_controller.dart';
-
 import 'package:medixpos/views/components/medicine/medicine_screen.dart';
-
-import 'package:medixpos/views/medicine_page.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
 import 'providers/medicine_provider.dart';
 import 'views/dashboard_page.dart';
-
 import 'views/purchase_page.dart';
 import 'views/report_page.dart';
 import 'views/sale_page.dart';
 import 'views/setting_page.dart';
-import 'views/sync_page.dart';
 
 
 void main() async {
@@ -58,8 +50,13 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: '/Dashboard', // Define the initial route
         getPages: [
-          GetPage(name: '/Dashboard', page: () => MainScreen()), // Use the persistent layout for dashboard
-          GetPage(name: '/Sale', page: () => SalePage()),  // Same layout but different index
+          GetPage(
+              name: '/Dashboard',
+              page: () =>
+                  MainScreen()), // Use the persistent layout for dashboard
+          GetPage(
+              name: '/Sale',
+              page: () => SalePage()), // Same layout but different index
           GetPage(name: '/Purchase', page: () => PurchasePage()),
           GetPage(name: '/Medicine', page: () => MedicineScreen()),
           GetPage(name: '/Report', page: () => ReportPage()),

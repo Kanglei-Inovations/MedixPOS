@@ -1,11 +1,9 @@
-
 import 'package:flutter/material.dart';
-
 import 'package:medixpos/constants.dart';
 import 'package:medixpos/models/my_files.dart';
 import 'package:medixpos/responsive.dart';
+import 'package:medixpos/views/components/dashboard/file_info_card.dart';
 
-import '../file_info_card.dart';
 
 class MyFiles extends StatelessWidget {
   const MyFiles({
