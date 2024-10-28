@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "279533313115",
+    "project_id": "medixpos-1fa18",
+    "storage_bucket": "medixpos-1fa18.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279533313115:android:5e36ea1b4a5287eb26f37e",
+        "android_client_info": {
+          "package_name": "com.kangleiinovations.medixpos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-qIM4aqcamos_QH0s5I1xtaSylfiOZlI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
