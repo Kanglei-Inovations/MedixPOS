@@ -1,12 +1,11 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medixpos/constants.dart';
 import 'package:medixpos/controllers/menu_app_controller.dart';
 import 'package:medixpos/firebase_options.dart';
+import 'package:medixpos/views/components/sale/invoice_page.dart';
 import 'package:medixpos/views/medicine_page.dart';
 import 'package:medixpos/views/sync_page.dart';
 import 'package:provider/provider.dart';
@@ -84,6 +83,11 @@ class MyApp extends StatelessWidget {
               name: '/Settings',
               page: () => SettingPage(),
               transition: Transition.fadeIn),
+          GetPage(
+              name: '/InvoicePage',
+              page: () => InvoicePage(),
+              transition: Transition.fadeIn),
+
         ],
       ),
     );

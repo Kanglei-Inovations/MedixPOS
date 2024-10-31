@@ -42,5 +42,17 @@ class Medicine {
       unitType: map['unitType']?? 'Unknown', // Handle null value
     );
   }
+  Map<String, dynamic> toMapForInvoice(String invoiceId) {
+    return {
+      'id': this.id,
+      'name': this.name,
+      'price': this.price,
+      'salePrice': this.salePrice,
+      'stock': this.stock,
+      'brand': this.brand,
+      'unitType': this.unitType,
+      'invoiceId': invoiceId, // Link to the invoice
+    };
+  }
 
 }

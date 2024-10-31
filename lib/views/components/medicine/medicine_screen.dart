@@ -7,6 +7,8 @@ import 'package:medixpos/views/dialog/edit_medicine_dialog.dart';
 import 'package:medixpos/constants.dart';
 
 class MedicineScreen extends StatefulWidget {
+  const MedicineScreen({super.key});
+
   @override
   _MedicineScreenState createState() => _MedicineScreenState();
 }

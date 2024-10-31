@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:medixpos/constants.dart';
 import 'package:medixpos/controllers/menu_app_controller.dart';
 import 'package:medixpos/responsive.dart';
 import 'package:medixpos/views/components/dashboard/recent_files.dart';
 import 'package:medixpos/views/components/header.dart';
+import 'package:medixpos/views/components/invoice/invoice_list.dart';
 import 'package:medixpos/views/components/side_menu.dart';
 import 'package:provider/provider.dart';
 
@@ -58,14 +60,17 @@ class SalePage extends StatelessWidget {
                                             defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
                                           ),
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          Get.toNamed('InvoicePage');
+
+                                        },
                                         icon: Icon(Icons.add),
                                         label: Text("New Sales"),
                                       ),
                                     ],
                                   ),
                                   SizedBox(height: defaultPadding),
-                                  RecentFiles(),
+                                  InvoiceList(),
 
                                 ],
                               ),

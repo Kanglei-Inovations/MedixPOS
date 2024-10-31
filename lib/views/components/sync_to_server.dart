@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:medixpos/constants.dart';
 import 'package:medixpos/providers/medicine_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart'; // Import the intl package for date formatting
 
 class SyncScreen extends StatefulWidget {
   @override
