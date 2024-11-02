@@ -3,20 +3,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medixpos/constants.dart';
-import 'package:medixpos/controllers/menu_app_controller.dart';
+
 import 'package:medixpos/firebase_options.dart';
-import 'package:medixpos/views/components/sale/invoice_page.dart';
-import 'package:medixpos/views/medicine_page.dart';
-import 'package:medixpos/views/sync_page.dart';
+import 'package:medixpos/views/components/side_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'providers/medicine_provider.dart';
-import 'views/dashboard_page.dart';
-import 'views/purchase_page.dart';
-import 'views/report_page.dart';
-import 'views/sale_page.dart';
-import 'views/setting_page.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +36,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MedicineProvider()),
-        ChangeNotifierProvider(create: (_) => MenuAppController()), // Initialize MenuAppController
+
       ],
       child: GetMaterialApp(
         title: 'Pharmacy App',
@@ -53,42 +47,9 @@ class MyApp extends StatelessWidget {
           canvasColor: secondaryColor,
         ),
         debugShowCheckedModeBanner: false,
-        initialRoute: '/Dashboard', // Define the initial route
-        getPages: [
-          GetPage(
-              name: '/Dashboard',
-              page: () => MainScreen(),
-              transition: Transition.fadeIn),
-          GetPage(
-              name: '/Sale',
-              page: () => SalePage(),
-              transition: Transition.fadeIn),
-          GetPage(
-              name: '/Purchase',
-              page: () => PurchasePage(),
-              transition: Transition.fadeIn),
-          GetPage(
-              name: '/Medicine',
-              page: () => MedicinePage(),
-              transition: Transition.fadeIn),
-          GetPage(
-              name: '/Report',
-              page: () => ReportPage(),
-              transition: Transition.fadeIn),
-          GetPage(
-              name: '/Sync',
-              page: () => SyncPage(),
-              transition: Transition.fadeIn),
-          GetPage(
-              name: '/Settings',
-              page: () => SettingPage(),
-              transition: Transition.fadeIn),
-          GetPage(
-              name: '/InvoicePage',
-              page: () => InvoicePage(),
-              transition: Transition.fadeIn),
+        home: SideMenu(),
 
-        ],
+
       ),
     );
   }

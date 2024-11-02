@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:medixpos/constants.dart';
-import 'package:medixpos/controllers/menu_app_controller.dart';
 import 'package:medixpos/responsive.dart';
 import 'package:provider/provider.dart';
 
@@ -15,21 +14,10 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        if (!Responsive.isDesktop(context))
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () => context.read<MenuAppController>().controlMenu(context.read<MenuAppController>().dashboardKey),
-          ),
 
-        // if (!Responsive.isMobile(context))
-          Text(
-            Get.currentRoute.split('/').last.capitalizeFirst ?? 'Unknown', // Optional formatting to get a cleaner name
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
         if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
-        if (!Responsive.isMobile(context))
-        Expanded(child: SearchField()),
+
         if (!Responsive.isMobile(context))
         ProfileCard()
       ],
@@ -82,6 +70,7 @@ class SearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+
       decoration: InputDecoration(
         hintText: "Search",
         fillColor: secondaryColor,
