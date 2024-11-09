@@ -1,11 +1,14 @@
 class Medicine {
-  String id;
-  String name;
-  double price;
-  double salePrice; // Added salePrice field
-  int stock;
-  String brand; // Added brand field
-  String unitType; // Added unitType field
+  final String id;
+  final String name;
+  final double price;
+  final double salePrice;
+  late final int stock;
+  final String brand;
+  final String unitType;
+  final String barcode;
+  final DateTime mfgDate;
+  final DateTime expiryDate;
 
   Medicine({
     required this.id,
@@ -15,9 +18,12 @@ class Medicine {
     required this.stock,
     required this.brand,
     required this.unitType,
+    required this.barcode,
+    required this.mfgDate,
+    required this.expiryDate,
   });
 
-  // Convert to Map for Firebase and SQLite
+  // Convert object to map for Firestore
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -27,32 +33,43 @@ class Medicine {
       'stock': stock,
       'brand': brand,
       'unitType': unitType,
+      'barcode': barcode,
+      'mfgDate': mfgDate.toIso8601String(),
+      'expiryDate': expiryDate.toIso8601String(),
     };
   }
-
-  factory Medicine.fromMap(Map<String, dynamic> map) {
-    print('Received map: $map'); // Log the map
-    return Medicine(
-      id: map['id']?? 'Unknown', // Handle null value
-      name: map['name']?? 'Unknown', // Handle null value
-      price: map['price'] != null ? map['price'].toDouble() : 0.0,
-      salePrice: map['salePrice'] != null ? map['salePrice'].toDouble() : 0.0,
-      stock: map['stock'] != null ? map['stock'] : 0,
-      brand: map['brand']?? 'Unknown', // Handle null value
-      unitType: map['unitType']?? 'Unknown', // Handle null value
-    );
-  }
+  // Add this method for converting Medicine to a map for an invoice
   Map<String, dynamic> toMapForInvoice(String invoiceId) {
     return {
-      'id': this.id,
-      'name': this.name,
-      'price': this.price,
-      'salePrice': this.salePrice,
-      'stock': this.stock,
-      'brand': this.brand,
-      'unitType': this.unitType,
-      'invoiceId': invoiceId, // Link to the invoice
+      'invoiceId': invoiceId,
+      'name': name,
+      'price': price,
+      'salePrice': salePrice,
+      'stock': stock,
+      'brand': brand,
+      'unitType': unitType,
+      'barcode': barcode,
+      'mfgDate': mfgDate.toIso8601String(),
+      'expiryDate': expiryDate.toIso8601String(),
     };
   }
-
+  // Optionally, add a setter for stock if you want to customize it
+  set setStock(int value) {
+    stock = value;
+  }
+  // Convert map to Medicine object
+  factory Medicine.fromMap(Map<String, dynamic> map) {
+    return Medicine(
+      id: map['id'],
+      name: map['name'],
+      price: map['price'],
+      salePrice: map['salePrice'],
+      stock: map['stock'],
+      brand: map['brand'],
+      unitType: map['unitType'],
+      barcode: map['barcode'],
+      mfgDate: DateTime.parse(map['mfgDate']),
+      expiryDate: DateTime.parse(map['expiryDate']),
+    );
+  }
 }

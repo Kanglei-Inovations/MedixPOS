@@ -24,28 +24,28 @@ class _SyncScreenState extends State<SyncScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: double.infinity,
-              child: FutureBuilder(
-                future: medicineProvider.scanForOfflineData(), // Scan for offline data
-                builder: (context, snapshot) {
-
-                    return DataTable(
-                      columnSpacing: defaultPadding,
-                      columns: [
-                        DataColumn(label: Text("Medicine")),
-                        DataColumn(label: Text("Created Date")),
-                        DataColumn(label: Text("Actions")),
-                      ],
-                      rows: List.generate(
-                        medicineProvider.unsyncedData.length,
-                            (index) => unsyncedDataRow(medicineProvider.unsyncedData[index], context, medicineProvider),
-                      ),
-                    );
-
-                },
-              ),
-            ),
+            // SizedBox(
+            //   width: double.infinity,
+            //   child: FutureBuilder(
+            //     future: medicineProvider.scanForOfflineData(), // Scan for offline data
+            //     builder: (context, snapshot) {
+            //
+            //         return DataTable(
+            //           columnSpacing: defaultPadding,
+            //           columns: [
+            //             DataColumn(label: Text("Medicine")),
+            //             DataColumn(label: Text("Created Date")),
+            //             DataColumn(label: Text("Actions")),
+            //           ],
+            //           rows: List.generate(
+            //             medicineProvider.unsyncedData.length,
+            //                 (index) => unsyncedDataRow(medicineProvider.unsyncedData[index], context, medicineProvider),
+            //           ),
+            //         );
+            //
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -63,21 +63,7 @@ class _SyncScreenState extends State<SyncScreen> {
             
             icon: Icon(Icons.cloud_upload_rounded, color: Colors.red),
             onPressed: () async {
-              // Check if the medicine exists in Firestore
-              final exists = await medicineProvider.onlinedatacheck(data['name']);
-              if (exists) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Already synced: ${data['name']}")),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Syncing ${data['name']}...")),
-                );
-                await medicineProvider.synctoonline(data);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Synced ${data['name']} to Firestore!")),
-                );
-              }
+
             },
           ),
         ),

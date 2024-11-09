@@ -1,62 +1,98 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:medixpos/models/invoice.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'package:medixpos/models/medicine.dart'; // Ensure this path is correct and consistent
+import 'package:medixpos/models/medicine.dart';
 
 class MedicineProvider extends ChangeNotifier {
   List<Medicine> _medicines = [];
   List<Medicine> get medicines => _medicines;
-  List<Medicine> _missingMedicinesInFirestore = [];
-  List<Medicine> get missingMedicines => _missingMedicinesInFirestore;
-  List<Map<String, dynamic>> unsyncedData = [];
-  Database? _database;
+
   List<Invoice> _invoices = [];
   List<Invoice> get invoices => _invoices;
-  // Initialize SQLite database
-  Future<void> initializeDatabase() async {
-    final databasePath = await getDatabasesPath();
-    String path = join(databasePath, 'medicines.db');
 
-    _database = await openDatabase(
-      path,
-      version: 1,
-      onCreate: (db, version) async {
-        // Create the invoices table
-        await db.execute(
-          'CREATE TABLE IF NOT EXISTS invoices(id TEXT PRIMARY KEY, subtotal REAL, discount REAL, taxRate REAL, amountPaid REAL, paymentType TEXT, createdAt TEXT)',
-        );
-        // Create the invoice_items table
-        await db.execute(
-          'CREATE TABLE IF NOT EXISTS invoice_items(id TEXT PRIMARY KEY, name TEXT, price REAL, salePrice REAL, stock INTEGER, brand TEXT, unitType TEXT, invoiceId TEXT, FOREIGN KEY(invoiceId) REFERENCES invoices(id))',
-        );
-        // Create the medicines table
-        await db.execute(
-          'CREATE TABLE IF NOT EXISTS medicines(id TEXT PRIMARY KEY, name TEXT, price REAL, salePrice REAL, stock INTEGER, brand TEXT, unitType TEXT, isSynced INTEGER DEFAULT 0)',
-        );
-      },
-    );
-    await fetchInvoices();  // Load invoices on initialization
-    await checkFirestoreAndLoadData();
-    // Ensure that _medicines is populated
-    _medicines = await fetchMedicines(_database!);
-    notifyListeners();
+  List<Medicine> _missingMedicinesInFirestore = [];
+  List<Medicine> get missingMedicines => _missingMedicinesInFirestore;
+
+  List<Map<String, dynamic>> unsyncedData = [];
+
+  /// Fetch medicines from Firestore
+  Future<void> fetchMedicines() async {
+    try {
+      final firestoreMedicines = await FirebaseFirestore.instance.collection('medicines').get();
+      _medicines = firestoreMedicines.docs.map((doc) => Medicine.fromMap(doc.data())).toList();
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+
   }
 
+  /// Add a new medicine to Firestore
+  Future<void> addMedicine(Medicine medicine) async {
+    try {
+      await FirebaseFirestore.instance.collection('medicines').doc(medicine.id).set(medicine.toMap());
+      _medicines.add(medicine);
+      notifyListeners();
+      print("Added");
+    } catch (e) {
+      print("Error adding medicine to Firestore: $e");
+    }
+  }
 
+  /// Delete a medicine from Firestore
+  Future<void> deleteMedicine(String id) async {
+    try {
+      await FirebaseFirestore.instance.collection('medicines').doc(id).delete();
+      _medicines.removeWhere((medicine) => medicine.id == id);
+      notifyListeners();
+    } catch (e) {
+      print("Error deleting medicine from Firestore: $e");
+    }
+  }
 
+  /// Update an existing medicine in Firestore
+  Future<void> updateMedicine(
+      String id,
+      String name,
+      double price,
+      double salePrice,
+      int stock,
+      String unit,
+      String brand,
+      String barcode,
+      DateTime mfgDate,
+      DateTime expiryDate,
+      ) async {
+    try {
+      final updatedData = {
+        'name': name,
+        'price': price,
+        'salePrice': salePrice,
+        'stock': stock,
+        'brand': brand,
+        'unitType': unit,
+        'barcode': barcode,
+        'mfgDate': mfgDate.toIso8601String(),
+        'expiryDate': expiryDate.toIso8601String(),
+      };
+      await FirebaseFirestore.instance.collection('medicines').doc(id).update(updatedData);
+      await fetchMedicines(); // Reload data from Firestore
+    } catch (e) {
+      print("Error updating medicine in Firestore: $e");
+    }
+  }
 
+  /// Save a new invoice with associated medicine items to Firestore
   Future<void> saveInvoice(
       List<Medicine> invoiceItems,
       double subtotal,
       double discount,
       double taxRate,
       double amountPaid,
-      String paymentType) async {
-    final db = await _getDatabase(); // Ensure a single db instance is used
-
-    String invoiceId = DateTime.now().millisecondsSinceEpoch.toString();
+      String paymentType,
+      ) async {
+    final invoiceId = DateTime.now().millisecondsSinceEpoch.toString();
 
     final invoiceData = {
       'id': invoiceId,
@@ -69,182 +105,50 @@ class MedicineProvider extends ChangeNotifier {
     };
 
     try {
-      // Insert into invoices table
-      await db.insert('invoices', invoiceData,
-          conflictAlgorithm: ConflictAlgorithm.replace);
+      await FirebaseFirestore.instance.collection('invoices').doc(invoiceId).set(invoiceData);
 
-      // Insert each medicine item associated with the invoice
       for (var item in invoiceItems) {
-        final itemData = item.toMapForInvoice(invoiceId);
-        await db.insert('invoice_items', itemData,
-            conflictAlgorithm: ConflictAlgorithm.replace);
-        print("Inserted");
+        await FirebaseFirestore.instance
+            .collection('invoices')
+            .doc(invoiceId)
+            .collection('invoice_items')
+            .doc(item.id)
+            .set(item.toMapForInvoice(invoiceId));
       }
-
+      print('Invoice added to Firestore');
       notifyListeners();
     } catch (e) {
-      print('Error adding invoice: $e');
-    }
-  }
-  Future<void> fetchInvoices() async {
-    final db = await _getDatabase();
-    final List<Map<String, dynamic>> maps = await db.query('invoices');
-
-    _invoices = List.generate(maps.length, (i) => Invoice.fromMap(maps[i]));
-    notifyListeners();  // Notify UI listeners of the change
-  }
-
-  // Check Firestore and load data if SQLite is empty
-  Future<void> checkFirestoreAndLoadData() async {
-    final firestoreMedicines =
-        await FirebaseFirestore.instance.collection('medicines').get();
-    if (firestoreMedicines.docs.isEmpty) {
-      print("Warning: Firestore is empty. Please check your database setup.");
-      return; // No data to load from Firestore
-    }
-
-    // Load data from Firestore into SQLite
-    for (var doc in firestoreMedicines.docs) {
-      final medicineData = doc.data();
-      await addMedicine(Medicine.fromMap(medicineData));
+      print('Error saving invoice to Firestore: $e');
     }
   }
 
-  // Fetch medicines from SQLite
-  Future<List<Medicine>> fetchMedicines(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.query('medicines');
-    return List.generate(maps.length, (i) => Medicine.fromMap(maps[i]));
-  }
-
-  // Add medicine to SQLite
-  Future<void> addMedicine(Medicine medicine) async {
-    final db = await _getDatabase(); // Ensure you're using the same DB instance
-    await db.insert('medicines', medicine.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    _medicines.add(medicine);
-    notifyListeners();
-  }
-
-  // Delete medicine from SQLite
-  Future<void> deleteMedicine(String id) async {
-    final databasePath = await getDatabasesPath();
-    String path = join(databasePath, 'medicines.db');
-
-    final db = await openDatabase(path);
-    await db.delete('medicines', where: 'id = ?', whereArgs: [id]);
-
-    _medicines.removeWhere((medicine) => medicine.id == id);
-    notifyListeners();
-  }
-
-  // Edit Medicine
-  Future<void> updateMedicine(String id, String name, double price,
-      double salePrice, int stock, String unit, String brand) async {
-    final db =
-        await _getDatabase(); // Ens, String texture you have a method to get the database connection
-
-    await db.update(
-      'medicines',
-      {
-        'name': name,
-        'price': price,
-        'salePrice': salePrice,
-        'stock': stock,
-        'brand': brand,
-        'unitType': unit,
-      },
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-
-    // Fetch the updated list of medicines from the database
-    _medicines = await fetchMedicines(db);
-
-    // Notify listeners that the data has changed
-    notifyListeners();
-  }
-
-  Future<Database> _getDatabase() async {
-    if (_database != null) return _database!;
-
-    final databasePath = await getDatabasesPath();
-    String path = join(databasePath, 'medixpos.db');
-
-    _database = await openDatabase(
-      path,
-      version: 1,
-      onCreate: (db, version) async {
-        await db.execute(
-          'CREATE TABLE IF NOT EXISTS medicines(id TEXT PRIMARY KEY, name TEXT, price REAL, salePrice REAL, stock INTEGER, brand TEXT, unitType TEXT, isSynced INTEGER DEFAULT 0)',
-        );
-
-        await db.execute(
-          'CREATE TABLE IF NOT EXISTS invoices(id TEXT PRIMARY KEY, subtotal REAL, discount REAL, taxRate REAL, amountPaid REAL, paymentType TEXT, createdAt TEXT)',
-        );
-
-        await db.execute(
-          'CREATE TABLE IF NOT EXISTS invoice_items(id TEXT PRIMARY KEY, name TEXT, price REAL, salePrice REAL, stock INTEGER, brand TEXT, unitType TEXT, invoiceId TEXT, FOREIGN KEY(invoiceId) REFERENCES invoices(id))',
-        );
-      },
-    );
-
-    return _database!;
-  }
-
-
-
-  Future<void> scanForOfflineData() async {
-    final db = await _getDatabase();
-
+  /// Delete an invoice and its items from Firestore
+  Future<void> deleteInvoice(String id) async {
     try {
-      // Fetch all data from SQLite (you can modify this to target specific tables if needed)
-      final allMedicines = await db.query('medicines');
+      // Delete all invoice items associated with this invoice
+      final invoiceItems = await FirebaseFirestore.instance
+          .collection('invoices')
+          .doc(id)
+          .collection('invoice_items')
+          .get();
 
-      // Check if any data exists
-      if (allMedicines.isNotEmpty) {
-        unsyncedData =
-            allMedicines; // Store or manipulate the fetched data as needed
-      } else {
-        // No data found
-        print('No offline data available.');
-        unsyncedData = []; // Clear unsyncedData if no records are found
+      for (var item in invoiceItems.docs) {
+        await item.reference.delete();
       }
+
+      // Now delete the invoice itself
+      await FirebaseFirestore.instance.collection('invoices').doc(id).delete();
+      _invoices.removeWhere((invoice) => invoice.id == id);
+      notifyListeners();
     } catch (e) {
-      // Catch any SQLite errors and print them
-      print('Error scanning for offline data: $e');
-    } finally {
-      notifyListeners(); // Notify listeners to update UI if necessary
+      print("Error deleting invoice from Firestore: $e");
     }
   }
 
-// Check if a medicine exists in Firestore by name
-  Future<bool> onlinedatacheck(String medicineName) async {
-    final firestoreMedicines =
-        await FirebaseFirestore.instance.collection('medicines').get();
-    final firestoreMedicineNames =
-        firestoreMedicines.docs.map((doc) => doc.data()['name']).toSet();
-    return firestoreMedicineNames.contains(medicineName);
-  }
-
-  // Sync single data item to Firestore
-  Future<void> synctoonline(Map<String, dynamic> data) async {
-    final db = await _getDatabase();
-    try {
-      await FirebaseFirestore.instance
-          .collection('medicines')
-          .doc(data['id'])
-          .set(data);
-      // Mark as synced in local SQLite
-      await db.update(
-        'medicines',
-        {
-          'isSynced': 1
-        }, // Assuming you have an 'isSynced' field to track sync status
-        where: 'id = ?',
-        whereArgs: [data['id']],
-      );
-    } catch (e) {
-      print("Error syncing data: $e");
-    }
+  /// Fetch all invoices from Firestore
+  Future<void> fetchInvoices() async {
+    final firestoreInvoices = await FirebaseFirestore.instance.collection('invoices').get();
+    _invoices = firestoreInvoices.docs.map((doc) => Invoice.fromMap(doc.data())).toList();
+    notifyListeners();
   }
 }

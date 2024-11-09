@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+    xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+    xmlns:rescap="http://schemas.microsoft.com/appx/manifest/rescap/windows10">
+
+    <Identity Name="com.example.yourapp" Publisher="CN=YourName" Version="1.0.0.0" />
+
+    <Properties>
+        <DisplayName>MEDIXPOS</DisplayName>
+        <PublisherDisplayName>KANGLEIINOVATIONS</PublisherDisplayName>
+        <Description>Your app description.</Description>
+        <Logo>Assets/YourAppLogo.png</Logo>
+    </Properties>
+
+    <Dependencies>
+        <TargetDeviceFamily Name="windows10" MinVersion="10.0.0" MaxVersionTested="10.0.0" />
+    </Dependencies>
+
+    <Applications>
+        <Application Id="App" Executable="YourApp.exe" EntryPoint="your.app.entrypoint">
+            <uap:VisualElements
+                DisplayName="Your App Name"
+                Description="Your app description."
+                BackgroundColor="#FFFFFF"
+                ForegroundText="light"
+                DarkBackgroundColor="#000000"
+                DarkForegroundText="light">
+                <uap:SplashScreen Image="Assets/SplashScreen.png" />
+            </uap:VisualElements>
+        </Application>
+    </Applications>
+
+    <Capabilities>
+        <Capability Name="internetClient" />
+        <rescap:Capability Name="broadFileSystemAccess" />
+    </Capabilities>
+
+</Package>

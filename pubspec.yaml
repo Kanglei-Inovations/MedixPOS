@@ -43,7 +43,12 @@ dependencies:
   fl_chart: ^0.68.0
   http:
   intl:
-  dropdown_button2: ^2.3.9
+  flutter_typeahead:
+  image_picker:
+  file_selector_windows:
+  flutter_barcode_scanner: ^2.0.0
+  pdf: ^3.6.0     # Check for the latest version
+  printing: ^5.8.0 # Check for the latest version
 
 
 

@@ -34,7 +34,7 @@ class _SideMenuState extends State<SideMenu> {
     MedicineScreen(),
     ReportPage(),
     SyncPage(),
-    SettingPage(),
+    SettingsPage(),
   ];
 
   void _onSelectPage(int index) {
